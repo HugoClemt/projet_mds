@@ -11,6 +11,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthentificationService _apiService = AuthentificationService();
+  Map<String, dynamic>? _userInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    final userInfo = await _apiService.getUserInfo();
+    setState(() {
+      _userInfo = userInfo;
+    });
+  }
 
   void _logout(BuildContext context) async {
     await _apiService.logout();
@@ -32,8 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: const Center(
-        child: Text('Welcome to the Home Screen!'),
+      body: Column(
+        children: [
+          Center(
+            child: Text('Hello ${_userInfo?['username']}!'),
+          ),
+        ],
       ),
     );
   }
