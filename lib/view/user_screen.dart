@@ -32,11 +32,14 @@ class _UserScreenState extends State<UserScreen> {
         title: const Text('User List'),
       ),
       body: Center(
-        child: Column(
-          children: [
-            for (final userInfo in _allUserInfo) buildUserColumn(userInfo),
-          ],
-        ),
+        child: _allUserInfo.isEmpty
+            ? const CircularProgressIndicator()
+            : ListView.builder(
+                itemCount: _allUserInfo.length,
+                itemBuilder: (context, index) {
+                  return buildUserColumn(_allUserInfo[index]);
+                },
+              ),
       ),
     );
   }
