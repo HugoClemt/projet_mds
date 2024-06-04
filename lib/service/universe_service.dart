@@ -87,4 +87,29 @@ class UniverseService {
       return {};
     }
   }
+
+  Future<ApiResponse> updateUniverse(String id, String name) async {
+    final token = await AuthentificationService().getToken();
+    final data = {'name': name};
+    final jsonBody = jsonEncode(data);
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/universes/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonBody,
+    );
+
+    print('Response status updateUniverse: ${response.statusCode}');
+    print('Response body updateUniverse: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ApiResponse.fromJson(jsonResponse);
+    } else {
+      return ApiResponse(success: false, message: 'Failed to update universe');
+    }
+  }
 }
