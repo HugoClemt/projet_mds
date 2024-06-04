@@ -29,6 +29,9 @@ class AuthentificationService {
 
     if (response.statusCode == 201) {
       final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['token'] != null) {
+        await saveToken(jsonResponse['token']);
+      }
       return ApiResponse.fromJson(jsonResponse);
     } else {
       return ApiResponse(success: false, message: 'Failed to login');
@@ -60,6 +63,9 @@ class AuthentificationService {
 
     if (response.statusCode == 201) {
       final jsonResponse = json.decode(response.body);
+      if (jsonResponse['token'] != null) {
+        await saveToken(jsonResponse['token']);
+      }
       return ApiResponse.fromJson(jsonResponse);
     } else {
       return ApiResponse(success: false, message: 'Failed to register');
