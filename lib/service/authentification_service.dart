@@ -140,4 +140,31 @@ class AuthentificationService {
       return null;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getAllUserInfo() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/users'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status getAllUser: ${response.statusCode}');
+    print('Response body getAllUser: ${response.body}');
+
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        return data.cast<Map<String, dynamic>>();
+      } on FormatException catch (e) {
+        print('Error parsing JSON: $e');
+        return [];
+      }
+    } else {
+      print('Failed to load all user info: ${response.body}');
+      return [];
+    }
+  }
 }

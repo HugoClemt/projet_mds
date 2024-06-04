@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/authentification_service.dart';
 import 'package:projet_mds/view/login_screen.dart';
+import 'package:projet_mds/view/user_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,10 +48,68 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(
             child: Text('Hello ${_userInfo?['username']}!'),
           ),
+          const SizedBox(height: 20),
+          Center(
+              child: GridView(
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+            ),
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UserScreen(),
+                    ),
+                  );
+                },
+                child: const Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.person),
+                      Text('User List'),
+                    ],
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  print('Universe List');
+                },
+                child: const Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.rocket_launch_outlined),
+                      Text('Universe List'),
+                    ],
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  print('Planet List');
+                },
+                child: const Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.messenger_outline),
+                      Text('User List'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          )),
         ],
       ),
     );
