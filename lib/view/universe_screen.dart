@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:projet_mds/service/authentification_service.dart';
+import 'package:projet_mds/service/universe_service.dart';
 
-class UserScreen extends StatefulWidget {
-  const UserScreen({super.key});
+class UniverseScreen extends StatefulWidget {
+  const UniverseScreen({super.key});
 
   @override
-  State<UserScreen> createState() => _UserScreenState();
+  State<UniverseScreen> createState() => _UniverseScreenState();
 }
 
-class _UserScreenState extends State<UserScreen> {
-  final AuthentificationService _apiService = AuthentificationService();
-  List<Map<String, dynamic>> _allUserInfo = [];
+class _UniverseScreenState extends State<UniverseScreen> {
+  final UniverseService _apiUniverseService = UniverseService();
+  List<Map<String, dynamic>> _allUniverseInfo = [];
 
   @override
   void initState() {
     super.initState();
-    _loadAllUserInfo();
+    _loadAllUniverseInfo();
   }
 
-  Future<void> _loadAllUserInfo() async {
-    final allUserInfo = await _apiService.getAllUserInfo();
+  Future<void> _loadAllUniverseInfo() async {
+    final allUniverseInfo = await _apiUniverseService.getAllUniverseInfo();
     setState(() {
-      _allUserInfo = allUserInfo;
+      _allUniverseInfo = allUniverseInfo;
     });
   }
 
@@ -29,20 +29,27 @@ class _UserScreenState extends State<UserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User List'),
+        title: const Text('Universe List'),
       ),
       body: Center(
         child: Column(
           children: [
-            for (final userInfo in _allUserInfo) buildUserColumn(userInfo),
+            for (final universeInfo in _allUniverseInfo)
+              buildUniverseColumn(universeInfo),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print('Add new universe');
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-Widget buildUserColumn(Map<String, dynamic> userInfo) {
+Widget buildUniverseColumn(Map<String, dynamic> universeInfo) {
   return Container(
     margin: const EdgeInsets.all(10.0),
     decoration: const BoxDecoration(
@@ -64,11 +71,9 @@ Widget buildUserColumn(Map<String, dynamic> userInfo) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userInfo['username'] ?? 'Pseudo inconnu',
+              Text(universeInfo['name'] ?? 'Universe unknown',
                   style: const TextStyle(
                       fontSize: 16.0, fontWeight: FontWeight.bold)),
-              Text(userInfo['email'] ?? 'Email inconnu',
-                  style: const TextStyle(fontSize: 14.0)),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/authentification_service.dart';
 import 'package:projet_mds/view/login_screen.dart';
+import 'package:projet_mds/view/universe_screen.dart';
 import 'package:projet_mds/view/user_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -82,7 +83,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               InkWell(
                 onTap: () {
-                  print('Universe List');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UniverseScreen(),
+                    ),
+                  );
                 },
                 child: const Card(
                   child: Column(
