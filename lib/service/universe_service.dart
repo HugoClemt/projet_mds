@@ -66,4 +66,25 @@ class UniverseService {
       return ApiResponse(success: false, message: 'Failed to create universe');
     }
   }
+
+  Future<Map<String, dynamic>> getUniverseData(String id) async {
+    final token = await AuthentificationService().getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/universes/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status getOneUniverse: ${response.statusCode}');
+    print('Response body getOneUniverse: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      print('Failed to load one universe info: ${response.body}');
+      return {};
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/universe_service.dart';
+import 'package:projet_mds/view/show_universe.dart';
 
 class UniverseScreen extends StatefulWidget {
   const UniverseScreen({super.key});
@@ -27,6 +28,13 @@ class _UniverseScreenState extends State<UniverseScreen> {
     });
   }
 
+  void _onUniverseTap(String universeId) {
+    print("Universe ID: $universeId");
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ShowUniverse(universeId: universeId);
+    }));
+  }
+
   void _createUniverse() async {
     final nameUniverse = _nameController.text;
 
@@ -34,10 +42,6 @@ class _UniverseScreenState extends State<UniverseScreen> {
 
     if (response.success) {
       _loadAllUniverseInfo();
-    } else {
-      setState(() {
-        _message = response.message;
-      });
     }
   }
 
@@ -47,15 +51,19 @@ class _UniverseScreenState extends State<UniverseScreen> {
       appBar: AppBar(
         title: const Text('Universe List'),
       ),
-      body: Center(
-        child: _allUniverseInfo.isEmpty
-            ? const CircularProgressIndicator()
-            : ListView.builder(
-                itemCount: _allUniverseInfo.length,
-                itemBuilder: (context, index) {
-                  return buildUniverseColumn(_allUniverseInfo[index]);
-                },
-              ),
+      body: RefreshIndicator(
+        onRefresh: _loadAllUniverseInfo,
+        child: Center(
+          child: _allUniverseInfo.isEmpty
+              ? const CircularProgressIndicator()
+              : ListView.builder(
+                  itemCount: _allUniverseInfo.length,
+                  itemBuilder: (context, index) {
+                    return buildUniverseColumn(
+                        _allUniverseInfo[index], _onUniverseTap);
+                  },
+                ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -95,46 +103,50 @@ class _UniverseScreenState extends State<UniverseScreen> {
   }
 }
 
-Widget buildUniverseColumn(Map<String, dynamic> universeInfo) {
-  return Container(
-    margin: const EdgeInsets.all(10.0),
-    height: 75,
-    decoration: const BoxDecoration(
-      border: Border(
-        top: BorderSide(color: Colors.grey),
-        right: BorderSide(color: Colors.grey),
-        bottom: BorderSide(color: Colors.grey),
-        left: BorderSide(color: Colors.grey),
+Widget buildUniverseColumn(
+    Map<String, dynamic> universeInfo, void Function(String) onTap) {
+  return GestureDetector(
+    onTap: () => onTap(universeInfo['id'].toString()),
+    child: Container(
+      margin: const EdgeInsets.all(10.0),
+      height: 75,
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.grey),
+          right: BorderSide(color: Colors.grey),
+          bottom: BorderSide(color: Colors.grey),
+          left: BorderSide(color: Colors.grey),
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
       ),
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-    ),
-    child: Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 10.0),
-          child: Image.network(
-            'https://mds.sprw.dev/image_data/${universeInfo['image']}',
-            errorBuilder: (context, error, stackTrace) => const Icon(
-              Icons.image_not_supported,
-              size: 75.0,
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10.0),
+            child: Image.network(
+              'https://mds.sprw.dev/image_data/${universeInfo['image']}',
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.image_not_supported,
+                size: 75.0,
+              ),
             ),
           ),
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                universeInfo['name'] ?? 'Universe unknown',
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  universeInfo['name'] ?? 'Universe unknown',
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }
