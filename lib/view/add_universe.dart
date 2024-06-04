@@ -8,6 +8,8 @@ class AddUniverse extends StatefulWidget {
 }
 
 class _AddUniverseState extends State<AddUniverse> {
+  final TextEditingController _nameUniverseController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,10 @@ class _AddUniverseState extends State<AddUniverse> {
         title: const Text('Add Universe'),
       ),
       body: const Center(
-        child: Text('Add Universe'),
+        child: TextField(
+          controller: null,
+          decoration: InputDecoration(labelText: "Test"),
+        ),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/universe_service.dart';
-import 'package:projet_mds/view/add_universe.dart';
 
 class UniverseScreen extends StatefulWidget {
   const UniverseScreen({super.key});
@@ -12,6 +11,8 @@ class UniverseScreen extends StatefulWidget {
 class _UniverseScreenState extends State<UniverseScreen> {
   final UniverseService _apiUniverseService = UniverseService();
   List<Map<String, dynamic>> _allUniverseInfo = [];
+  final TextEditingController _nameController = TextEditingController();
+  String? _message;
 
   @override
   void initState() {
@@ -24,6 +25,20 @@ class _UniverseScreenState extends State<UniverseScreen> {
     setState(() {
       _allUniverseInfo = allUniverseInfo;
     });
+  }
+
+  void _createUniverse() async {
+    final nameUniverse = _nameController.text;
+
+    final response = await _apiUniverseService.createUniverse(nameUniverse);
+
+    if (response.success) {
+      _loadAllUniverseInfo();
+    } else {
+      setState(() {
+        _message = response.message;
+      });
+    }
   }
 
   @override
@@ -44,9 +59,34 @@ class _UniverseScreenState extends State<UniverseScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddUniverse()),
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Add Universe'),
+                content: TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter universe name',
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _createUniverse();
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Add'),
+                  ),
+                ],
+              );
+            },
           );
         },
         child: const Icon(Icons.add),
