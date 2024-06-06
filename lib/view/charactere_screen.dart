@@ -14,6 +14,7 @@ class _CharactereScreenState extends State<CharactereScreen> {
   List<Map<String, dynamic>> _allCharactereInfo = [];
   String? _message;
   bool _isLoading = true;
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +32,19 @@ class _CharactereScreenState extends State<CharactereScreen> {
       _allCharactereInfo = allCharactereInfo;
       _isLoading = false;
     });
+  }
+
+  Future<void> _createCharactere() async {
+    final nameCharactere = _nameController.text;
+
+    final response = await _apiCharactereService.createCharactere(
+      nameCharactere,
+      widget.universeId,
+    );
+
+    if (response.success) {
+      _loadAllCharactereInfo();
+    }
   }
 
   @override
@@ -61,7 +75,35 @@ class _CharactereScreenState extends State<CharactereScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('Add new charactere');
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Add Charactere'),
+                content: TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Charactere name',
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _createCharactere();
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Add'),
+                  ),
+                ],
+              );
+            },
+          );
         },
         child: const Icon(Icons.add),
       ),
