@@ -65,4 +65,29 @@ class CharactereService {
       return ApiResponse(success: false, message: 'Failed to create character');
     }
   }
+
+  Future<Map<String, dynamic>?> getCharactereData(
+    String universeId,
+    String charactereId,
+  ) async {
+    final token = await AuthentificationService().getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/universes/$universeId/characters/$charactereId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status getCharactereData: ${response.statusCode}');
+    print('Response body getCharactereData: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return data;
+    } else {
+      print('Failed to load charactere data: ${response.body}');
+      return null;
+    }
+  }
 }

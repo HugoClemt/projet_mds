@@ -30,9 +30,14 @@ class _UniverseScreenState extends State<UniverseScreen> {
 
   void _onUniverseTap(String universeId) {
     print("Universe ID: $universeId");
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ShowUniverse(universeId: universeId);
-    }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ShowUniverse(universeId: universeId);
+        },
+      ),
+    );
   }
 
   void _createUniverse() async {

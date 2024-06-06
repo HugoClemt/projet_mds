@@ -67,11 +67,15 @@ Widget buildUserColumn(Map<String, dynamic> userInfo) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userInfo['username'] ?? 'Pseudo inconnu',
-                  style: const TextStyle(
-                      fontSize: 16.0, fontWeight: FontWeight.bold)),
-              Text(userInfo['email'] ?? 'Email inconnu',
-                  style: const TextStyle(fontSize: 14.0)),
+              Text(
+                userInfo['username'] ?? 'Pseudo inconnu',
+                style: const TextStyle(
+                    fontSize: 16.0, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                userInfo['email'] ?? 'Email inconnu',
+                style: const TextStyle(fontSize: 14.0),
+              ),
             ],
           ),
         ),

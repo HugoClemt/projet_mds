@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/charactere_service.dart';
+import 'package:projet_mds/view/charactere_show.dart';
 
 class CharactereScreen extends StatefulWidget {
   final String universeId;
@@ -47,6 +48,21 @@ class _CharactereScreenState extends State<CharactereScreen> {
     }
   }
 
+  void _onCharactereTap(String charactereId) {
+    print('Charactere ID: $charactereId');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ShowCharactere(
+            charactereId: charactereId,
+            universeId: widget.universeId,
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,11 +80,7 @@ class _CharactereScreenState extends State<CharactereScreen> {
                       itemCount: _allCharactereInfo.length,
                       itemBuilder: (context, index) {
                         return buildCharactereColumn(
-                          _allCharactereInfo[index],
-                          (charactereId) {
-                            print('Charactere ID: $charactereId');
-                          },
-                        );
+                            _allCharactereInfo[index], _onCharactereTap);
                       },
                     ),
         ),
