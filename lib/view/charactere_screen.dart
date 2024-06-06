@@ -13,6 +13,7 @@ class _CharactereScreenState extends State<CharactereScreen> {
   final CharactereService _apiCharactereService = CharactereService();
   List<Map<String, dynamic>> _allCharactereInfo = [];
   String? _message;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -21,10 +22,14 @@ class _CharactereScreenState extends State<CharactereScreen> {
   }
 
   Future<void> _loadAllCharactereInfo() async {
+    setState(() {
+      _isLoading = true;
+    });
     final allCharactereInfo =
         await _apiCharactereService.getAllCharactereInfo(widget.universeId);
     setState(() {
       _allCharactereInfo = allCharactereInfo;
+      _isLoading = false;
     });
   }
 
@@ -37,19 +42,21 @@ class _CharactereScreenState extends State<CharactereScreen> {
       body: RefreshIndicator(
         onRefresh: _loadAllCharactereInfo,
         child: Center(
-          child: _allCharactereInfo.isEmpty
+          child: _isLoading
               ? const CircularProgressIndicator()
-              : ListView.builder(
-                  itemCount: _allCharactereInfo.length,
-                  itemBuilder: (context, index) {
-                    return buildCharactereColumn(
-                      _allCharactereInfo[index],
-                      (charactereId) {
-                        print('Charactere ID: $charactereId');
+              : _allCharactereInfo.isEmpty
+                  ? const Text('No characters found.')
+                  : ListView.builder(
+                      itemCount: _allCharactereInfo.length,
+                      itemBuilder: (context, index) {
+                        return buildCharactereColumn(
+                          _allCharactereInfo[index],
+                          (charactereId) {
+                            print('Charactere ID: $charactereId');
+                          },
+                        );
                       },
-                    );
-                  },
-                ),
+                    ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
