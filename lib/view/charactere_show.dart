@@ -13,7 +13,6 @@ class ShowCharactere extends StatefulWidget {
 
 class _ShowCharactereState extends State<ShowCharactere> {
   final CharactereService _apiCharactereService = CharactereService();
-  final TextEditingController _nameController = TextEditingController();
   Map<String, dynamic>? _charactereData;
 
   @override
@@ -27,8 +26,15 @@ class _ShowCharactereState extends State<ShowCharactere> {
         widget.universeId, widget.charactereId);
     setState(() {
       _charactereData = charactereData;
-      _nameController.text = _charactereData?['name'] ?? '';
     });
+  }
+
+  void _updateCharactereName() async {
+    final response = await _apiCharactereService.updateCharactere(
+        widget.universeId, widget.charactereId);
+    if (response.success) {
+      _loadCharactereData();
+    }
   }
 
   @override
@@ -39,15 +45,11 @@ class _ShowCharactereState extends State<ShowCharactere> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () {},
+            onPressed: _loadCharactereData,
           ),
           IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.message),
-            onPressed: () {},
+            icon: const Icon(Icons.save_as),
+            onPressed: _updateCharactereName,
           ),
         ],
       ),
@@ -60,11 +62,6 @@ class _ShowCharactereState extends State<ShowCharactere> {
                 width: 350,
                 child: Column(
                   children: [
-                    TextField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(labelText: ''),
-                    ),
-                    const SizedBox(height: 20),
                     Text('${_charactereData?['description']}'),
                     const SizedBox(height: 20),
                     Image.network(

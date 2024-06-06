@@ -90,4 +90,30 @@ class CharactereService {
       return null;
     }
   }
+
+  Future<ApiResponse> updateCharactere(
+      String universe, String charactere) async {
+    final token = await AuthentificationService().getToken();
+
+    print('Request body updateCharactere: $charactere');
+    print('Request body updateCharactere: $universe');
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/universes/$universe/characters/$charactere'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status updateCharactere: ${response.statusCode}');
+    print('Response body updateCharactere: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ApiResponse.fromJson(jsonResponse);
+    } else {
+      return ApiResponse(success: false, message: 'Failed to update character');
+    }
+  }
 }

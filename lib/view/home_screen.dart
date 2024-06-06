@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/authentification_service.dart';
+import 'package:projet_mds/view/conversation_screen.dart';
 import 'package:projet_mds/view/login_screen.dart';
 import 'package:projet_mds/view/universe_screen.dart';
 import 'package:projet_mds/view/user_screen.dart';
@@ -102,14 +103,19 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               InkWell(
                 onTap: () {
-                  print('Planet List');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ConversationScreen(),
+                    ),
+                  );
                 },
                 child: const Card(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.messenger_outline),
-                      Text('User List'),
+                      Text('Conversation List'),
                     ],
                   ),
                 ),
