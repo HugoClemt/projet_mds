@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/universe_service.dart';
+import 'package:projet_mds/view/charactere_screen.dart';
 
 class ShowUniverse extends StatefulWidget {
   final String universeId;
@@ -55,7 +56,11 @@ class _ShowUniverseState extends State<ShowUniverse> {
           ),
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return CharactereScreen(universeId: widget.universeId);
+              }));
+            },
           ),
         ],
       ),
