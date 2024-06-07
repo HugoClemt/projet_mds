@@ -141,6 +141,60 @@ class AuthentificationService {
     }
   }
 
+  Future<Map<String, dynamic>?> getUserData(String userId) async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/users/$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status getUser: ${response.statusCode}');
+    print('Response body getUser: ${response.body}');
+
+    if (response.statusCode == 200) {
+      print('User info loaded: ${response.body}');
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      print('Failed to load user info: ${response.body}');
+      return null;
+    }
+  }
+
+  Future<ApiResponse> updateUserInfo(String userId, String username,
+      String email, String firstname, String lastname) async {
+    final token = await getToken();
+    final data = {
+      'username': username,
+      'email': email,
+      'firstname': firstname,
+      'lastname': lastname,
+    };
+
+    final jsonBody = jsonEncode(data);
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/users/$userId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonBody,
+    );
+
+    print('Response status updateUserInfo: ${response.statusCode}');
+    print('Response body updateUserInfo: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      return ApiResponse.fromJson(jsonResponse);
+    } else {
+      return ApiResponse(success: false, message: 'Failed to update user info');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getAllUserInfo() async {
     final token = await getToken();
     final response = await http.get(

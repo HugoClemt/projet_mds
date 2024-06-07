@@ -44,19 +44,22 @@ class _UserScreenState extends State<UserScreen> {
       appBar: AppBar(
         title: const Text('User List'),
       ),
-      body: Center(
-        child: _allUserInfo.isEmpty
-            ? const CircularProgressIndicator()
-            : ListView.builder(
-                itemCount: _allUserInfo.length,
-                itemBuilder: (context, index) {
-                  final userInfo = _allUserInfo[index];
-                  return GestureDetector(
-                    onTap: () => _onUserTap(userInfo['id'].toString()),
-                    child: buildUserColumn(userInfo),
-                  );
-                },
-              ),
+      body: RefreshIndicator(
+        onRefresh: _loadAllUserInfo,
+        child: Center(
+          child: _allUserInfo.isEmpty
+              ? const CircularProgressIndicator()
+              : ListView.builder(
+                  itemCount: _allUserInfo.length,
+                  itemBuilder: (context, index) {
+                    final userInfo = _allUserInfo[index];
+                    return GestureDetector(
+                      onTap: () => _onUserTap(userInfo['id'].toString()),
+                      child: buildUserColumn(userInfo),
+                    );
+                  },
+                ),
+        ),
       ),
     );
   }
