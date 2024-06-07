@@ -71,7 +71,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MessageScreen(conversationId: conversation['id']),
+        builder: (context) => MessageScreen(
+          conversationId: conversation['id'],
+          characterId: conversation['character_id'],
+        ),
       ),
     );
   }

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:projet_mds/service/charactere_service.dart';
 import 'package:projet_mds/service/message_service.dart';
 
 class MessageScreen extends StatefulWidget {
   final int conversationId;
-  const MessageScreen({super.key, required this.conversationId});
+  final int characterId;
+  const MessageScreen(
+      {super.key, required this.conversationId, required this.characterId});
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
@@ -12,13 +15,16 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final MessageService _messageService = MessageService();
+  final CharactereService _charactereService = CharactereService();
   final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> _messages = [];
+  Map<String, dynamic>? _character;
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
+    _loadCharactere();
   }
 
   @override
@@ -55,6 +61,15 @@ class _MessageScreenState extends State<MessageScreen> {
     print('Messages: $messages');
   }
 
+  void _loadCharactere() async {
+    final charactere =
+        await _charactereService.getCharacters(widget.characterId.toString());
+    setState(() {
+      _character = charactere;
+    });
+    print('Charactere: $charactere');
+  }
+
   void _scrollToBottom() {
     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
   }
@@ -73,10 +88,17 @@ class _MessageScreenState extends State<MessageScreen> {
             isSentByHuman ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!isSentByHuman) ...[
-            CircleAvatar(
-              backgroundColor: Colors.grey[300],
-              child: const Icon(Icons.android, color: Colors.black),
+          if (!isSentByHuman &&
+              _character != null &&
+              _character!['image'] != null) ...[
+            ClipOval(
+              child: Image.network(
+                'https://mds.sprw.dev/image_data/${_character!['image']}',
+                width: 50,
+                height: 50,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
+              ),
             ),
             const SizedBox(width: 10),
           ],
