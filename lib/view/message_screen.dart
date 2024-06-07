@@ -59,6 +59,11 @@ class _MessageScreenState extends State<MessageScreen> {
     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
   }
 
+  void _refreshMessages() async {
+    await _messageService.refreshMessages(widget.conversationId.toString());
+    _loadMessages();
+  }
+
   Widget _buildMessage(BuildContext context, Map<String, dynamic> message) {
     bool isSentByHuman = message['is_sent_by_human'];
     return Padding(
@@ -135,7 +140,7 @@ class _MessageScreenState extends State<MessageScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(30.0),
             child: Row(
               children: [
                 Expanded(
@@ -154,6 +159,10 @@ class _MessageScreenState extends State<MessageScreen> {
                 IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: _sendMessage,
+                ),
+                IconButton(
+                  onPressed: _refreshMessages,
+                  icon: const Icon(Icons.refresh),
                 ),
               ],
             ),

@@ -65,4 +65,25 @@ class MessageService {
       return [];
     }
   }
+
+  Future<void> refreshMessages(String conversationID) async {
+    final token = await AuthentificationService().getToken();
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/conversations/$conversationID'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status refreshMessages: ${response.statusCode}');
+    print('Response body refreshMessages: ${response.body}');
+
+    if (response.statusCode == 200) {
+      print('Messages refreshed successfully');
+    } else {
+      print('Failed to refresh messages: ${response.body}');
+    }
+  }
 }
