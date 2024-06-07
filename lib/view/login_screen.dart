@@ -25,7 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.success) {
       if (response.token != null) {
-        await _authentificationservice.saveToken(response.token!);
+        print(response.token);
+        await _authentificationservice.getToken();
       }
       Navigator.pushReplacement(
         context,
