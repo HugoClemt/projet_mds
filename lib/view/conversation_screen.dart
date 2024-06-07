@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projet_mds/service/charactere_service.dart';
 import 'package:projet_mds/service/conversation_service.dart';
 
 class ConversationScreen extends StatefulWidget {
@@ -10,6 +11,7 @@ class ConversationScreen extends StatefulWidget {
 
 class _ConversationScreenState extends State<ConversationScreen> {
   final ConversationService _apiConversationService = ConversationService();
+  final CharactereService _apiCharactereService = CharactereService();
   List<Map<String, dynamic>> _allConversation = [];
   String? _message;
 
@@ -59,6 +61,21 @@ class _ConversationScreenState extends State<ConversationScreen> {
     }
   }
 
+  Future<Map<String, dynamic>> _getCharacterById(String charactereId) async {
+    return await _apiCharactereService.getCharacters(charactereId);
+  }
+
+  void _onConversationTap(Map<String, dynamic> conversation) {
+    print('Tapped on conversation: ${conversation['id']}');
+  }
+
+  void _onConversationDismissed(Map<String, dynamic> conversation) {
+    setState(() {
+      _allConversation.remove(conversation);
+    });
+    print('Dismissed conversation: ${conversation['id']}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,8 +84,48 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadAllConversation,
-        child: const Center(
-          child: Text("Liste des conversation"),
+        child: ListView.builder(
+          itemCount: _allConversation.length,
+          itemBuilder: (context, index) {
+            final conversation = _allConversation[index];
+            return Dismissible(
+              key: Key(conversation['id'].toString()),
+              onDismissed: (direction) {
+                _onConversationDismissed(conversation);
+              },
+              background: Container(color: Colors.red),
+              child: FutureBuilder<Map<String, dynamic>>(
+                future:
+                    _getCharacterById(conversation['character_id'].toString()),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const ListTile(
+                      title: Text('Loading...'),
+                    );
+                  } else if (snapshot.hasError) {
+                    return const ListTile(
+                      title: Text('Error loading character'),
+                    );
+                  } else {
+                    final character = snapshot.data ?? {};
+                    return ListTile(
+                      leading: character['image'] != null
+                          ? Image.network(
+                              'https://mds.sprw.dev/image_data/${character['image']}',
+                              width: 50,
+                              height: 50,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.error),
+                            )
+                          : const Icon(Icons.person),
+                      title: Text(character['name'] ?? 'Unknown'),
+                      onTap: () => _onConversationTap(conversation),
+                    );
+                  }
+                },
+              ),
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
