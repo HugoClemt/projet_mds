@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/charactere_service.dart';
 import 'package:projet_mds/service/conversation_service.dart';
+import 'package:projet_mds/view/message_screen.dart';
 
 class ConversationScreen extends StatefulWidget {
   const ConversationScreen({super.key});
@@ -67,13 +68,26 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   void _onConversationTap(Map<String, dynamic> conversation) {
     print('Tapped on conversation: ${conversation['id']}');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MessageScreen(conversationId: conversation['id']),
+      ),
+    );
   }
 
-  void _onConversationDismissed(Map<String, dynamic> conversation) {
-    setState(() {
-      _allConversation.remove(conversation);
-    });
-    print('Dismissed conversation: ${conversation['id']}');
+  void _onConversationDismissed(Map<String, dynamic> conversation) async {
+    final response = await _apiConversationService.deleteConversation(
+      conversation['id'].toString(),
+    );
+
+    if (response.success) {
+      _loadAllConversation();
+    } else {
+      setState(() {
+        _message = response.message;
+      });
+    }
   }
 
   @override
@@ -93,7 +107,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
               onDismissed: (direction) {
                 _onConversationDismissed(conversation);
               },
-              background: Container(color: Colors.red),
+              background: Stack(
+                children: <Widget>[
+                  Container(color: Colors.red),
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               child: FutureBuilder<Map<String, dynamic>>(
                 future:
                     _getCharacterById(conversation['character_id'].toString()),

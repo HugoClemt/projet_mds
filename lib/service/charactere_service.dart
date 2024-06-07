@@ -127,8 +127,8 @@ class CharactereService {
       },
     );
 
-    print('Response status getCharacter: ${response.statusCode}');
-    print('Response body getCharacter: ${response.body}');
+    //print('Response status getCharacter: ${response.statusCode}');
+    //print('Response body getCharacter: ${response.body}');
 
     if (response.statusCode == 200) {
       try {

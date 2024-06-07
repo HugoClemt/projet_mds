@@ -111,14 +111,40 @@ class ConversationService {
       body: jsonBody,
     );
 
-    print('Response status createConversation: ${response.statusCode}');
-    print('Response body createConversation: ${response.body}');
+    //print('Response status createConversation: ${response.statusCode}');
+    //print('Response body createConversation: ${response.body}');
 
     if (response.statusCode == 201) {
       return ApiResponse(success: true, message: 'Conversation created');
     } else {
       return ApiResponse(
           success: false, message: 'Failed to create conversation');
+    }
+  }
+
+  //delete conversation
+  Future<ApiResponse> deleteConversation(String conversationId) async {
+    final String? token = await AuthentificationService().getToken();
+    if (token == null) {
+      throw Exception('Token is missing');
+    }
+
+    final response = await http.delete(
+      Uri.parse('$baseUrl/conversations/$conversationId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    //print('Response status deleteConversation: ${response.statusCode}');
+    //print('Response body deleteConversation: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return ApiResponse(success: true, message: 'Conversation deleted');
+    } else {
+      return ApiResponse(
+          success: false, message: 'Failed to delete conversation');
     }
   }
 }
