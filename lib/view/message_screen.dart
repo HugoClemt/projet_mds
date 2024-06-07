@@ -12,12 +12,19 @@ class MessageScreen extends StatefulWidget {
 class _MessageScreenState extends State<MessageScreen> {
   final TextEditingController _messageController = TextEditingController();
   final MessageService _messageService = MessageService();
+  final ScrollController _scrollController = ScrollController();
   List<Map<String, dynamic>> _messages = [];
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _sendMessage() async {
@@ -42,72 +49,93 @@ class _MessageScreenState extends State<MessageScreen> {
     setState(() {
       _messages = messages;
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
     print('Messages: $messages');
+  }
+
+  void _scrollToBottom() {
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  }
+
+  Widget _buildMessage(BuildContext context, Map<String, dynamic> message) {
+    bool isSentByHuman = message['is_sent_by_human'];
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+      child: Row(
+        mainAxisAlignment:
+            isSentByHuman ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isSentByHuman) ...[
+            CircleAvatar(
+              backgroundColor: Colors.grey[300],
+              child: const Icon(Icons.android, color: Colors.black),
+            ),
+            const SizedBox(width: 10),
+          ],
+          Container(
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isSentByHuman ? Colors.blue : Colors.grey[300],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message['content'],
+                  style: TextStyle(
+                    color: isSentByHuman ? Colors.white : Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  message['created_at'],
+                  style: TextStyle(
+                    color: isSentByHuman ? Colors.white : Colors.black,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isSentByHuman) ...[
+            const SizedBox(width: 10),
+            const CircleAvatar(
+              backgroundColor: Colors.blue,
+              child: Icon(Icons.person, color: Colors.white),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Message'),
+        title: const Text('Messages'),
       ),
       resizeToAvoidBottomInset: true,
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final message = _messages[index];
-                bool isSentByHuman = message['is_sent_by_human'];
-                return Align(
-                  alignment: isSentByHuman
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isSentByHuman ? Colors.blue : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          message['content'],
-                          style: TextStyle(
-                            color: isSentByHuman ? Colors.white : Colors.black,
-                          ),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isSentByHuman)
-                              const Icon(Icons.person, color: Colors.white),
-                            if (!isSentByHuman)
-                              const Icon(Icons.android, color: Colors.black),
-                            const SizedBox(width: 5),
-                            Text(
-                              message['created_at'],
-                              style: TextStyle(
-                                color:
-                                    isSentByHuman ? Colors.white : Colors.black,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                return _buildMessage(context, message);
               },
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
                 Expanded(

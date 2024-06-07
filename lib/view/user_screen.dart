@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_mds/service/authentification_service.dart';
+import 'package:projet_mds/view/show_user.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -25,6 +26,18 @@ class _UserScreenState extends State<UserScreen> {
     });
   }
 
+  void _onUserTap(String userId) {
+    print('User ID: $userId');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ShowUser(userId: userId);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +50,11 @@ class _UserScreenState extends State<UserScreen> {
             : ListView.builder(
                 itemCount: _allUserInfo.length,
                 itemBuilder: (context, index) {
-                  return buildUserColumn(_allUserInfo[index]);
+                  final userInfo = _allUserInfo[index];
+                  return GestureDetector(
+                    onTap: () => _onUserTap(userInfo['id'].toString()),
+                    child: buildUserColumn(userInfo),
+                  );
                 },
               ),
       ),
